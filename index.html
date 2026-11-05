@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hold Short</title>
+<style>
+:root{--bg:#0a0c0b;--card:#111513;--ink:#d8e0d5;--mute:#7d8a7f;--line:#26302a;--acc:#6fb3c4;--accink:#0a0c0b;--ok:#7bc98f;--bad:#e5786d;--atc:#e2a93b;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:4px 0}.sub{color:var(--mute);margin:0 0 14px;font-size:14px}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tabs button,.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer}
+.tabs button{flex:1;padding:8px 4px}h2{font-size:17px;margin:18px 0 8px}.on{background:var(--acc)!important;color:var(--accink)!important;border-color:var(--acc)!important}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px}.chip{white-space:nowrap;padding:6px 12px}
+input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;margin-bottom:10px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.who{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--acc)}.who.a{color:var(--atc)}
+.say{font-size:16px;font-weight:600;margin:3px 0}.mean{color:var(--mute);font-size:14px}
+.q{font-size:18px;font-weight:600;margin:8px 0 12px}
+.opt{display:block;width:100%;text-align:left;margin-bottom:8px;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:15px;cursor:pointer}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--card))}.opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 18%,var(--card))}
+.next{background:var(--acc);color:var(--accink);border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:600;cursor:pointer;width:100%}
+.score{color:var(--mute);font-size:14px;margin-bottom:6px}.note{font-size:12px;color:var(--mute);margin-top:18px}
+.tip{border-left:4px solid var(--acc);padding:8px 12px;background:var(--card);border-radius:0 10px 10px 0;margin-bottom:12px;font-size:14px}
+body{font:15px/1.5 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+h1,h2,.who,.chip,.tabs button,.score{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+h1{font-size:19px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:10px}
+h2{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--atc);margin:24px 0 8px}
+.tabs{gap:0;border:1px solid var(--line)}
+.tabs button{border:0;border-right:1px solid var(--line);border-radius:0;background:transparent;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.tabs button:last-child{border-right:0}
+.chip{border-radius:2px;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+input,.opt,.next{border-radius:2px}
+.c{border-radius:0;border-left:3px solid var(--acc);padding:10px 12px}.c.a{border-left-color:var(--atc)}
+.say{font:500 14px/1.5 ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.who{font-size:10px;letter-spacing:.1em}
+.tip{border-radius:0;border-left-color:var(--atc)}
+select{padding:8px;border-radius:2px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14px;min-width:0}
+body.split{display:grid;grid-template-columns:1fr 1fr;height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:hidden}
+body.split main,body.split aside{overflow-y:auto;max-width:none;margin:0;width:100%;min-height:0}
+body.split aside{border-left:1px solid var(--line)}
+@media (max-width:760px){body.split{grid-template-columns:1fr;grid-template-rows:1fr 1fr}body.split aside{border-left:0;border-top:2px solid var(--line)}}
+aside{padding:16px;max-width:720px;margin:0 auto}
+.add{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.add input,.add select,.add button{margin:0;padding:8px;font-size:14px;min-width:0;width:100%}
+.s2{grid-column:span 2}.s3{grid-column:span 3}
+.st{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--mute);padding:8px 10px;margin-bottom:8px}
+.sh{display:flex;align-items:center;gap:8px;margin-bottom:6px}.sh b{font:600 15px ui-monospace,"SF Mono",Menlo,Consolas,monospace;flex:1}
+.sh select{padding:4px;font-size:12px}
+.x{background:none;border:0;color:var(--mute);font-size:20px;cursor:pointer;line-height:1;padding:0 4px}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
+.st input{margin:0;padding:6px;font:13px ui-monospace,"SF Mono",Menlo,Consolas,monospace;min-width:0}
+#warn{font-size:13px;color:var(--atc);margin-bottom:8px}
+#why{margin:10px 0}#why:empty{display:none}
+.st .chips{flex-wrap:wrap;margin-bottom:6px}
+.sh .chip{padding:4px 8px;font-size:10px}
+.nx{margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}.nx .say{margin:4px 0}.nx .chip{margin-top:6px;padding:4px 10px}
+.st:not(.open) .bd{display:none}
+.sh b{flex:none;cursor:pointer}.sm{flex:1;font-size:12px;color:var(--mute);cursor:pointer;min-width:0}.sm.late{color:var(--atc)}.go{white-space:nowrap}
+#qa{margin-bottom:8px}
+#al{position:fixed;top:0;left:0;right:0;padding:10px;text-align:center;font:600 14px ui-monospace,Menlo,Consolas,monospace;background:var(--bad);color:var(--accink);z-index:9;display:none;cursor:pointer}
+#al.on{display:block;animation:fl .6s steps(2,start) infinite}@keyframes fl{to{visibility:hidden}}
+#fl .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+#v4.landfull{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;padding:16px;max-width:none;margin:0}
+#v4.landfull #fl .grid{grid-template-columns:repeat(4,1fr)}
+@page{size:landscape;margin:10mm}
+@media print{:root{--bg:#fff;--card:#fff;--ink:#111;--mute:#444;--line:#999;--acc:#1d4ed8;--atc:#a16207}body{background:#fff}main>section:not(#v4),.tabs,aside,#al,.ctl{display:none!important}main{max-width:none;padding:0}#v4{display:block!important;position:static;padding:0;max-width:none}#fl .grid{grid-template-columns:repeat(4,1fr)!important}.st{break-inside:avoid}}
+h1{font-size:26px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink);text-shadow:0 0 14px color-mix(in srgb,var(--acc) 55%,transparent);border-bottom:0;padding:14px 0 0;margin:0 0 8px}
+h1::before{content:"● ";color:var(--bad);text-shadow:0 0 8px var(--bad);animation:bl 1.4s steps(2,start) infinite}
+h1::after{content:"";display:block;height:3px;margin-top:12px;background:repeating-linear-gradient(90deg,var(--ok) 0 10px,transparent 10px 22px);box-shadow:0 0 10px var(--ok);opacity:.85}
+@keyframes bl{to{visibility:hidden}}
+h1::before,h1::after{display:none}
+h1{font-size:20px;font-weight:600;letter-spacing:.2em;text-shadow:none;color:var(--ink);padding:12px 0 10px;margin:0 0 6px;border-bottom:1px solid var(--line)}
+#boot{position:fixed;inset:0;z-index:100;background:#000;color:#7bc98f;font:14px/1.6 ui-monospace,Menlo,Consolas,monospace;padding:24px;display:flex;flex-direction:column;cursor:pointer;transition:opacity .6s}
+#boot.off{opacity:0;pointer-events:none}
+#boot .txt{white-space:pre-wrap;flex:1;overflow:hidden;padding-top:10vh}
+#boot .bar{height:8px;border:1px solid #7bc98f;margin-bottom:12px}
+#boot .bar i{display:block;height:100%;width:0;background:#7bc98f;transition:width .25s}
+</style>
+</head>
+<body>
+<div id="al" role="alert" title="Tap to dismiss"></div>
+<main>
+<h1>Hold Short</h1>
+<p class="sub">Radio phraseology for PTFS pilots and controllers.</p>
+<div style="margin-bottom:10px"><button id="sp" class="chip">Split view</button> <button id="fs" class="chip">Full screen</button> <button id="zo" class="chip" aria-label="Scale down">A−</button><span id="zv" class="mean" style="font-size:12px;margin:0 4px">100%</span><button id="zi" class="chip" aria-label="Scale up">A+</button></div>
+<div class="tabs"><button id="t0" class="on">Phrasebook</button><button id="t1">Quiz</button><button id="t2">Basics</button><button id="t3">ATC Script</button><button id="t4">Flight log</button></div>
+<section id="v0"><div class="chips" id="chips"></div><input id="s" type="search" placeholder="Search phrases…" aria-label="Search phrases"><div id="list"></div></section>
+<section id="v1" hidden><div class="chips" id="qm"><button class="chip on" data-m="0">Pilot calls</button><button class="chip" data-m="1">Controller replies</button></div><div class="score" id="score"></div><div class="q" id="q"></div><div id="opts"></div><div class="tip" id="why"></div><button class="next" id="nx" hidden>Next</button></section>
+<section id="v2" hidden>
+<div class="tip"><b>Call sign format.</b> Say your airline and flight number, like “Qatari 5564”, at the start of every call.</div>
+<div class="tip"><b>Who to call.</b> Ground handles taxiing, Tower handles runways, Departure and Approach handle vectors, Center handles the cruise.</div>
+<div class="tip"><b>Read back.</b> Repeat altitudes, headings, runways and hold-short instructions, then add your call sign.</div>
+<div class="tip"><b>Numbers.</b> Say digits one by one (“two seven zero”). Altitudes are spoken as “five thousand”.</div>
+<div class="tip"><b>Squawk and flight levels.</b> Say squawk digits one at a time (“squawk four five two one”). FL350 is “flight level three five zero”. Use feet below the transition altitude and flight levels above it. Always read both back.</div>
+<div class="tip"><b>Stuck?</b> Say “Say again” or “Standby”. Controllers would rather repeat than have you guess.</div>
+<p class="note">This is a community study aid based on standard ICAO/FAA phraseology. Check your PTFS server’s rules and controller briefings, since local procedures can differ.</p>
+</section>
+<section id="v3" hidden><div class="tip"><b>Controller rule of thumb.</b> Safety first: emergencies, then landing, then takeoff, then taxiing. One aircraft on a runway at a time. Say the call sign first, then the instruction, and keep it short.</div><div id="script"></div></section>
+<section id="v4" hidden><div class="chips ctl"><button class="chip" id="fp">Print / save PDF</button><button class="chip" id="fk">Landscape view</button><button class="chip" id="fo">Show omitted (0)</button></div><div class="mean ctl" style="margin-bottom:8px">Every aircraft you add is logged here with its status history. Omit an entry with ×. Use Landscape view for a full-screen copy, then screenshot it or use Print / save PDF.</div><div id="ss"></div><div id="fl"></div></section>
+</main>
+<aside id="trk" hidden>
+<h2 style="margin-top:0">Runways</h2>
+<div class="add"><input id="rn" class="s3" placeholder="Runway, e.g. 23R" aria-label="Runway"><button id="ra" class="next">Add</button></div>
+<div id="rws"></div>
+<h2>Aircraft log</h2>
+<input id="qa" placeholder="Quick add: QTR5564 23R B738 FL350 C" aria-label="Quick add aircraft"><div class="mean" style="margin:6px 0 10px;font-size:12px;line-height:1.7">Add a phase letter last, then press Enter. No letter means Parked.<br>P Parked · U Pushback · T Taxi · H Hold short · D Departing · C Climbing · R Cruise · E Descending · A Approach · L Landed</div>
+<div class="add"><input id="fc" class="s2" placeholder="Call sign" aria-label="Call sign"><input id="ft" placeholder="Type" aria-label="Aircraft type"><input id="fr" placeholder="Rwy" aria-label="Runway"><input id="ff" placeholder="FL/alt" aria-label="Flight level or altitude"><input id="fq" placeholder="Squawk" inputmode="numeric" maxlength="4" aria-label="Squawk"><select id="fs" class="s2" aria-label="Status"></select><input id="fn" class="s2" placeholder="Notes" aria-label="Notes"><button id="fg" class="chip">Assign squawk</button><button id="fa" class="next">Add</button></div>
+<div class="chips" id="pf"><button class="chip on" data-p="All">All</button><button class="chip" data-p="Ground">Ground</button><button class="chip" data-p="Tower">Tower</button><button class="chip" data-p="Dep/App">Dep/App</button><button class="chip" data-p="Center">Center</button><button class="chip" id="ec">Collapse all</button></div>
+<div id="gs" class="mean" style="font-size:12px;margin-bottom:8px"></div><div id="warn"></div><div id="strips"></div>
+<button id="cl" class="chip">Clear landed</button> <button id="un" class="chip" hidden>Undo</button>
+<details style="margin-top:14px"><summary class="mean">Backup: export or import</summary><textarea id="bk" rows="4" style="width:100%;margin-top:8px;padding:8px;background:var(--card);color:var(--ink);border:1px solid var(--line);font:12px ui-monospace,Menlo,Consolas,monospace" aria-label="Log backup text"></textarea><div style="display:flex;gap:6px;margin-top:6px"><button id="bx" class="chip">Export</button><button id="bi" class="chip">Import (replaces log)</button></div><div id="bm" class="mean" style="margin-top:6px"></div></details>
+</aside>
+<script>
+var D=[
+["Ground","P","“Ground, Qatari 5564, at the terminal, request taxi.”","Asking permission to start moving."],
+["Ground","A","“Qatari 5564, taxi to runway 23R via Alpha, hold short of runway 23R.”","Follow that route and stop before the runway."],
+["Ground","A","“Qatari 5564, cleared to Tokyo as filed, climb and maintain five thousand, expect flight level three five zero, squawk four five two one.”","Route approved, with initial altitude, expected cruise level and transponder code."],
+["Ground","P","“Cleared to Tokyo, climb five thousand, expect FL350, squawk 4521, Qatari 5564.”","Your readback of the clearance."],
+["Ground","P","“Taxi to 23R via Alpha, holding short, Qatari 5564.”","Your readback, proving you understood."],
+["Ground","A","“Qatari 5564, hold position.”","Stop right where you are."],
+["Ground","A","“Qatari 5564, continue taxi.”","You may resume taxiing."],
+["Tower","P","“Tower, Qatari 5564, holding short 23R, ready for departure.”","You’re at the runway edge and want to take off."],
+["Tower","A","“Qatari 5564, line up and wait, runway 23R.”","Enter the runway and wait. Do not take off yet."],
+["Tower","A","“Qatari 5564, runway 23R, cleared for takeoff.”","You may take off now."],
+["Tower","P","“Cleared for takeoff, 23R, Qatari 5564.”","Your readback of the takeoff clearance."],
+["Tower","A","“Qatari 5564, cancel takeoff clearance, stop immediately.”","Abort the takeoff."],
+["Departure","P","“Departure, Qatari 5564, climbing through two thousand.”","Checking in after takeoff."],
+["Departure","A","“Qatari 5564, radar contact, climb and maintain five thousand.”","ATC sees you. Climb to 5,000 ft and level off."],
+["Departure","A","“Qatari 5564, turn left heading 270.”","Turn left and fly a compass heading of 270°."],
+["Departure","A","“Qatari 5564, contact Center.”","Switch to the Center controller."],
+["Departure","A","“Qatari 5564, squawk four five two one, ident.”","Set that transponder code and press IDENT so ATC can spot you."],
+["Departure","P","“Squawk 4521, ident, Qatari 5564.”","Readback of the code."],
+["Enroute","P","“Center, Qatari 5564, requesting heading 270.”","Asking to change course."],
+["Enroute","A","“Qatari 5564, descend and maintain three thousand.”","Go down to 3,000 ft and hold it."],
+["Enroute","A","“Qatari 5564, reduce speed to two one zero knots.”","Slow to 210 knots."],
+["Enroute","A","“Qatari 5564, climb and maintain flight level three five zero.”","Climb to 35,000 ft and level off."],
+["Enroute","P","“Climb flight level 350, Qatari 5564.”","Readback of the flight level."],
+["Enroute","A","“Qatari 5564, proceed direct to the waypoint.”","Fly straight to that point."],
+["Approach","P","“Approach, Qatari 5564, request ILS runway 23R.”","Asking to land using the ILS guidance."],
+["Approach","A","“Qatari 5564, fly heading 090, vectors for ILS runway 23R.”","Follow my headings, I’ll line you up for the ILS."],
+["Approach","A","“Qatari 5564, cleared ILS runway 23R approach.”","You may fly the ILS and descend with it."],
+["Approach","A","“Qatari 5564, cleared visual approach runway 23R.”","Land by sight on that runway."],
+["Landing","P","“Tower, Qatari 5564, five miles out, runway 23R, full stop.”","You’re inbound and plan to land completely."],
+["Landing","A","“Qatari 5564, runway 23R, cleared to land.”","You may land."],
+["Landing","A","“Qatari 5564, go around.”","Abort landing, climb and circle back."],
+["Landing","A","“Qatari 5564, vacate runway via Bravo, contact Ground.”","Leave the runway on Bravo and switch to Ground."],
+["General","P","“Say again.”","Please repeat your last message."],
+["General","P","“Roger.”","Message received. It doesn’t mean yes or will do."],
+["General","P","“Wilco.”","Will comply."],
+["General","P","“Unable.”","I can’t do what you asked."],
+["General","P","“Standby.”","Wait, I’ll get back to you."],
+["General","P","“Mayday, mayday, mayday.”","Declaring a serious emergency."],
+["General","P","“Pan-pan, pan-pan, pan-pan.”","Urgent problem, but not immediate danger."]
+];
+var $=function(i){return document.getElementById(i)},cat="All",cats=["All","Ground","Tower","Departure","Enroute","Approach","Landing","General"];
+function show(n){for(var i=0;i<5;i++){$("v"+i).hidden=i!==n;$("t"+i).className=i===n?"on":""}if(n===1&&!cur)ask()}
+[0,1,2,3,4].forEach(function(i){$("t"+i).onclick=function(){show(i)}});
+$("chips").innerHTML=cats.map(function(c){return '<button class="chip'+(c==="All"?" on":"")+'" data-c="'+c+'">'+c+'</button>'}).join("");
+$("chips").onclick=function(e){var c=e.target.dataset.c;if(!c)return;cat=c;[].forEach.call($("chips").children,function(b){b.className="chip"+(b.dataset.c===c?" on":"")});draw()};
+$("s").oninput=draw;
+function draw(){var q=$("s").value.toLowerCase();$("list").innerHTML=D.filter(function(d){return(cat==="All"||d[0]===cat)&&(d[2]+d[3]).toLowerCase().indexOf(q)>-1}).map(function(d){return '<div class="c '+(d[1]==="A"?"a":"")+'"><div class="who '+(d[1]==="A"?"a":"")+'">'+(d[1]==="A"?"ATC says":"Pilot says")+' · '+d[0]+'</div><div class="say">'+d[2]+'</div><div class="mean">'+d[3]+'</div></div>'}).join("")||'<p class="mean">No matches.</p>'}
+var cur=null,right=0,total=0;
+function ask(){var o;if(qm){var c=C[Math.floor(Math.random()*C.length)];o=c.slice(1,5);cur=[0,0,c[0],c[1],c[5]]}else{cur=D[Math.floor(Math.random()*D.length)];o=[cur[3]];while(o.length<4){var m=D[Math.floor(Math.random()*D.length)][3];if(o.indexOf(m)<0)o.push(m)}}
+o.sort(function(){return Math.random()-.5});$("q").textContent=(qm?"You’re the controller. ":"What does this mean?  ")+cur[2];$("why").textContent="";$("nx").hidden=true;$("score").textContent="Score: "+right+" / "+total;
+$("opts").innerHTML="";o.forEach(function(t){var b=document.createElement("button");b.className="opt";b.textContent=t;b.onclick=function(){pick(b,t)};$("opts").appendChild(b)})}
+function pick(b,t){if(!$("nx").hidden)return;total++;if(t===cur[3]){right++;b.className="opt ok"}else{b.className="opt bad";[].forEach.call($("opts").children,function(x){if(x.textContent===cur[3])x.className="opt ok"})}
+$("score").textContent="Score: "+right+" / "+total;if(qm)$("why").textContent=cur[4];$("nx").hidden=false}
+$("nx").onclick=ask;draw();
+var S=[
+["Departure 1 · Clearance and pushback",[
+["“Qatari 5564, request IFR clearance to [destination].”","“Qatari 5564, cleared to [destination] as filed. Climb and maintain five thousand, expect flight level three five zero. Squawk four five two one.”","Order: route, initial altitude, expected level, squawk. Squawk codes are four digits, each 0 to 7. Ground does this if there’s no Delivery."],
+["Pilot reads it back: “Cleared to [destination], climb five thousand, expect FL350, squawk 4521, Qatari 5564.”","“Qatari 5564, readback correct.”","Check every item. If one is wrong: “Negative, squawk four five two one.” and repeat that item."],
+["“Request pushback.”","“Qatari 5564, pushback approved, face [north/south]. Report ready to taxi.”","Check nobody is behind them first."]]],
+["Departure 2 · Ground",[
+["“Request taxi.”","“Qatari 5564, taxi to runway 23R via Alpha, hold short of runway 23R.”","Always give a runway and a route. Say “hold short” wherever they must stop."],
+["Pilot reads back wrong: “Taxi to 23L…”","“Negative. Taxi to runway 23R via Alpha, hold short runway 23R.”","Correct it right away and repeat the full instruction."],
+["“Request taxi” but the taxiway is busy.","“Qatari 5564, hold position, traffic crossing ahead.”","Follow up with “continue taxi” once it’s clear."],
+["“Holding short 23R, ready.”","“Qatari 5564, contact Tower.”","Hand off once they’re at the runway."]]],
+["Departure 3 · Tower",[
+["“Holding short 23R, ready for departure.” (runway clear)","“Qatari 5564, wind 230 at 10, runway 23R, cleared for takeoff.”","Only clear them when the runway is empty and nobody is about to land."],
+["“Ready for departure.” (traffic landing)","“Qatari 5564, hold short runway 23R, traffic on final.”","Or use “line up and wait” if the landing aircraft is far enough out."],
+["They’re on the runway, waiting.","“Qatari 5564, line up and wait, runway 23R.”","This isn’t a takeoff clearance. Follow with “cleared for takeoff” when ready."],
+["Airborne.","“Qatari 5564, contact Departure.”","Hand off once they’re safely climbing."]]],
+["Departure 4 · Departure and Center",[
+["“Departure, Qatari 5564, climbing through two thousand.”","“Qatari 5564, radar contact. Climb and maintain five thousand, turn left heading 270.”","“Radar contact” tells them you can see them."],
+["You can’t find them on radar.","“Qatari 5564, squawk four five two one, ident.”","Ident makes their blip flash so you can confirm which aircraft it is."],
+["Climbing into the cruise.","“Qatari 5564, climb and maintain flight level three five zero.”","Pilot should read back: “Climb flight level 350, Qatari 5564.” If they get it wrong: “Negative, climb flight level three five zero.”"],
+["Leaving your airspace.","“Qatari 5564, contact Center.”","Center takes over for the cruise."]]],
+["Arrival 1 · Center to Approach",[
+["“Center, Qatari 5564, request descent.”","“Qatari 5564, descend and maintain flight level two five zero.”","Readback: “Descend FL250, Qatari 5564.” Later, below the transition altitude: “Descend and maintain three thousand, altimeter two niner niner two.” Say “Unable, traffic” if it isn’t free."],
+["Nearing the airport.","“Qatari 5564, contact Approach.”",""]]],
+["Arrival 2 · Approach",[
+["“Approach, Qatari 5564, descending three thousand, request ILS 23R.”","“Qatari 5564, radar contact. Expect ILS runway 23R. Descend and maintain three thousand.”",""],
+["Following vectors.","“Qatari 5564, turn right heading 090, maintain three thousand.” Then: “Turn right heading 180, intercept the localizer, cleared ILS runway 23R approach.”","Clear them for the approach only once they’re lined up to intercept."],
+["Visual arrival.","“Qatari 5564, cleared visual approach runway 23R, contact Tower.”",""]]],
+["Arrival 3 · Tower and Ground",[
+["“Tower, Qatari 5564, five miles out, runway 23R, full stop.”","“Qatari 5564, wind 240 at 8, runway 23R, cleared to land.”",""],
+["Runway not free yet.","“Qatari 5564, continue approach, number two, traffic ahead.”","Give the clearance later, before they reach the runway."],
+["Runway blocked or unsafe.","“Qatari 5564, go around, runway occupied. Climb and maintain three thousand.”","Say it early and firmly."],
+["They’ve touched down.","“Qatari 5564, vacate right via Bravo, contact Ground.”","Clear the runway quickly for the next aircraft."],
+["“Ground, Qatari 5564, vacated, request taxi to the gate.”","“Qatari 5564, taxi to the gate via Bravo and Alpha.”",""]]],
+["How to answer common requests",[
+["Asks to change altitude.","Yes: “Climb and maintain [X].” No: “Unable, traffic. Maintain [X], expect higher shortly.”",""],
+["Asks for direct or a new heading.","Yes: “Proceed direct [waypoint].” No: “Unable, remain on current heading.”",""],
+["Asks for touch-and-go or pattern work.","“Make left traffic runway 23R, cleared touch-and-go.” Busy: “Unable, extend downwind.”",""],
+["Asks for a low pass or flyby.","“Cleared low approach runway 23R, no landing, climb and maintain two thousand.”","Only if the runway is clear."],
+["Declares “Mayday”.","“Qatari 5564, mayday received. Runway 23R, cleared to land. Say souls on board and fuel remaining.”","Stop other departures and give them priority. They may squawk 7700 (emergency), 7600 (radio failure) or 7500 (hijack). Never assign those codes yourself."],
+["You couldn’t hear them.","“Qatari 5564, say again.”",""],
+["Call sign unclear or unknown.","“Station calling, say callsign.”",""],
+["They need time or you do.","“Qatari 5564, standby.”","Then answer as soon as you can."],
+["They ignore an instruction.","“Qatari 5564, turn left heading 270 immediately.”","Stay calm, repeat once, and follow your server’s rules if it continues."]]]
+];
+$("script").innerHTML=S.map(function(g){return '<h2>'+g[0]+'</h2>'+g[1].map(function(r){return '<div class="c"><div class="who">Pilot / situation</div><div class="mean">'+r[0]+'</div><div class="who a" style="margin-top:8px">You say</div><div class="say">'+r[1]+'</div>'+(r[2]?'<div class="mean">'+r[2]+'</div>':'')+'</div>'}).join('')}).join('');
+var sp=false,T=[],ST=["Parked","Pushback","Taxi","Hold short","Departing","Climbing","Cruise","Descending","Approach","Landed"],KEY="ptfs-strips";
+try{T=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){T=[]}
+function sv(){try{localStorage.setItem(KEY,JSON.stringify(T))}catch(e){}}
+function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function sc(s){return["Parked","Pushback","Taxi","Hold short"].indexOf(s)>-1?"var(--mute)":["Departing","Climbing"].indexOf(s)>-1?"var(--acc)":s==="Cruise"?"var(--ok)":"var(--atc)"}
+function fi(i,k,p,v){return '<input data-i="'+i+'" data-k="'+k+'" placeholder="'+p+'" aria-label="'+p+'" value="'+esc(v)+'"'+(k==="q"?' inputmode="numeric" maxlength="4"':'')+'>'}
+function rs(){syncF();rf();$("strips").innerHTML=T.length?T.map(function(t,i){if(!vis(t))return"";return '<div class="st'+(t.o?' open':'')+'" style="border-left-color:'+sc(t.s)+'"><div class="sh"><b data-t="'+i+'">'+esc(t.c)+'</b><span class="mean sm'+(late(t)?' late':'')+'" data-t="'+i+'">'+esc(sm(t))+'</span>'+(t.s!=="Landed"?'<button class="chip go" data-n="'+i+'">→ '+ST[ST.indexOf(t.s)+1]+'</button>':'')+'</div><div class="bd"><div class="sh"><select data-i="'+i+'" data-k="s">'+ST.map(function(x){return '<option'+(x===t.s?' selected':'')+'>'+x+'</option>'}).join('')+'</select><button class="chip" data-g="'+i+'">Squawk</button><button class="x" data-d="'+i+'" aria-label="Remove">×</button></div><div class="sg">'+fi(i,"t","Type",t.t)+fi(i,"r","Rwy",t.r)+fi(i,"f","FL/alt",t.f)+fi(i,"q","Squawk",t.q)+'</div>'+fi(i,"n","Notes",t.n)+nc(t)+'</div></div>'}).join(''):'<p class="mean">No aircraft yet. Add one above.</p>';fl()}
+function fl(){var cnt={},w=[],ok=/^[0-7]{4}$/,em=/^(7700|7600|7500)$/;T.forEach(function(t){if(t.q)cnt[t.q]=(cnt[t.q]||0)+1});
+T.forEach(function(t){var q=t.q;if(!q)return;if(!ok.test(q))w.push(esc(t.c)+": squawk must be four digits, 0 to 7");else if(cnt[q]>1)w.push("Duplicate squawk "+q+" ("+esc(t.c)+")");if(em.test(q))w.push(esc(t.c)+" is squawking "+q)});
+var by={};T.forEach(function(t){if(t.r)(by[t.r]=by[t.r]||[]).push(t)});Object.keys(by).forEach(function(r){var ap=by[r].filter(function(x){return x.s==="Approach"}),hs=by[r].filter(function(x){return x.s==="Hold short"}),nm=function(a){return a.map(function(x){return esc(x.c)}).join(", ")};if(ap.length&&hs.length)w.push("Runway "+esc(r)+": "+nm(hs)+" holding short while "+nm(ap)+" is on approach.");if(ap.length>1)w.push("Runway "+esc(r)+": "+ap.length+" arrivals on approach, sequence them.")});
+$("ec").textContent=T.some(function(t){return t.o})?"Collapse all":"Expand all";
+$("warn").innerHTML=w.join("<br>");
+[].forEach.call(document.querySelectorAll('#strips input[data-k="q"]'),function(e){var v=e.value;e.style.borderColor=v&&(!ok.test(v)||cnt[v]>1)?"var(--bad)":"";e.style.color=em.test(v)?"var(--atc)":""})}
+$("fs").innerHTML=ST.map(function(x){return'<option>'+x+'</option>'}).join('');
+$("sp").onclick=function(){sp=!sp;if(sp)bootOnce();document.body.classList.toggle("split",sp);$("trk").hidden=!sp;$("sp").textContent=sp?"Full view":"Split view";$("sp").className="chip"+(sp?" on":"")};
+$("fa").onclick=function(){var c=$("fc").value.trim();if(!c){$("fc").focus();return}
+T.unshift({c:c.toUpperCase(),t:$("ft").value.trim().toUpperCase(),r:$("fr").value.trim().toUpperCase(),f:$("ff").value.trim().toUpperCase(),q:$("fq").value.trim(),s:$("fs").value,n:$("fn").value.trim()});
+["fc","ft","fr","ff","fq","fn"].forEach(function(i){$(i).value=""});sv();rs()};
+$("strips").addEventListener("input",function(e){var i=e.target.dataset.i,k=e.target.dataset.k;if(i==null||!k)return;T[i][k]=e.target.value;if(k==="s")T[i].ts=Date.now();sv();if(k==="s")rs();else{fl();var st=e.target.closest(".st"),nx=st&&st.querySelector(".nx");if(nx)nx.outerHTML=nc(T[i])}});
+$("strips").addEventListener("click",function(e){var d=e.target.dataset;if(d.g!=null){T[d.g].q=nq();sv();rs()}else if(d.cp!=null){var b=e.target;try{navigator.clipboard.writeText(nt(T[d.cp])[0]).then(function(){b.textContent="Copied"},function(){b.textContent="Copy failed"})}catch(x){b.textContent="Copy failed"}}else if(d.d!=null){snap();T.splice(d.d,1);sv();rs()}else if(d.n!=null){adv(d.n)}else if(d.t!=null){T[d.t].o=!T[d.t].o;sv();rs()}});
+$("cl").onclick=function(){snap();T=T.filter(function(t){return t.s!=="Landed"});sv();rs()};
+var qm=0,C=[
+["Pilot: “Tower, Qatari 5564, holding short 23R, ready.” A jet is on short final for 23R.","“Qatari 5564, hold short runway 23R, traffic on final.”","“Qatari 5564, runway 23R, cleared for takeoff.”","“Qatari 5564, taxi onto runway 23R and take off when ready.”","“Qatari 5564, roger, contact Departure.”","Never clear or line up an aircraft on a runway with an arrival on short final."],
+["Pilot: “Ground, Qatari 5564, at the terminal, request taxi.” Runway 23R is in use.","“Qatari 5564, taxi to runway 23R via Alpha, hold short of runway 23R.”","“Qatari 5564, runway 23R, cleared for takeoff.”","“Qatari 5564, taxi anywhere to runway 23R and contact Tower.”","“Qatari 5564, roger.”","Give a runway, a route and a hold-short point."],
+["You said: taxi via Alpha, hold short 23R. Pilot reads back: “Taxi via Bravo, 23R.”","“Negative. Taxi via Alpha, hold short runway 23R.”","“Qatari 5564, readback correct.”","“Qatari 5564, roger.”","“Qatari 5564, continue.”","Always correct a wrong readback and repeat the full instruction."],
+["Pilot: “Qatari 5564, request flight level 350.” You have traffic at FL350 ahead.","“Qatari 5564, unable, traffic. Maintain flight level three one zero.”","“Qatari 5564, climb and maintain flight level three five zero.”","“Qatari 5564, climb flight level three five zero, ignore the traffic.”","“Qatari 5564, say again your altitude.”","Say “unable” with a reason, then give a safe alternative."],
+["Pilot: “Mayday, mayday, mayday, Qatari 5564, engine failure.”","“Qatari 5564, mayday received. Runway 23R, cleared to land. Say souls on board and fuel remaining.”","“Qatari 5564, standby, number two for landing.”","“Qatari 5564, are you declaring an emergency? Say again.”","“Qatari 5564, hold position and squawk seven seven zero zero.”","Emergencies come first. Acknowledge, give a runway and clear the area."],
+["An aircraft has just taken off and is climbing safely.","“Qatari 5564, contact Departure.”","“Qatari 5564, cleared for takeoff.”","“Qatari 5564, line up and wait.”","“Qatari 5564, hold short.”","Hand off once they’re safely airborne."],
+["Departure: you can’t tell which blip is Qatari 5564.","“Qatari 5564, squawk four five two one, ident.”","“Qatari 5564, squawk seven seven zero zero.”","“Qatari 5564, squawk eight eight eight eight.”","“Qatari 5564, cleared to land.”","Use ident to find them. Never assign emergency codes, and squawk digits only run 0 to 7."],
+["You assigned flight level 330. Pilot reads back: “Climb flight level 350.”","“Negative. Climb flight level three three zero.”","“Qatari 5564, readback correct.”","“Qatari 5564, roger.”","“Qatari 5564, cleared direct.”","A wrong altitude readback is a safety issue. Correct it immediately."],
+["An aircraft is on final but another is still on runway 23R.","“Qatari 5564, go around, runway occupied. Climb and maintain three thousand.”","“Qatari 5564, runway 23R, cleared to land.”","“Qatari 5564, reduce speed to two one zero.”","“Qatari 5564, contact Ground.”","Order the go-around early and firmly."],
+["An aircraft has just landed and is slowing on the runway.","“Qatari 5564, vacate right via Bravo, contact Ground.”","“Qatari 5564, cleared for takeoff.”","“Qatari 5564, hold position on the runway.”","“Qatari 5564, go around.”","Clear the runway quickly so the next aircraft can use it."]
+];
+$("qm").onclick=function(e){var m=e.target.dataset.m;if(m==null)return;qm=+m;[].forEach.call($("qm").children,function(b){b.className="chip"+(b.dataset.m===m?" on":"")});right=0;total=0;ask()};
+var R=[],RS=["Clear","Arrival on final","Occupied","Departure roll"],RH=["Safe to clear takeoff or landing.","Hold departures short. Line up only with plenty of room.","Do not clear takeoff or landing.","Hold everyone else short and clear of the runway."];
+try{R=JSON.parse(localStorage.getItem("ptfs-rwys")||"[]")}catch(e){R=[]}
+function sr(){try{localStorage.setItem("ptfs-rwys",JSON.stringify(R))}catch(e){}}
+function rc(s){return s===0?"var(--ok)":s===1?"var(--atc)":"var(--bad)"}
+function rr(){$("rws").innerHTML=R.length?R.map(function(r,i){return '<div class="st" style="border-left-color:'+rc(r.s)+'"><div class="sh"><b>RWY '+esc(r.n)+'</b><button class="x" data-d="'+i+'" aria-label="Remove runway">×</button></div><div class="chips">'+RS.map(function(x,j){return '<button class="chip'+(j===r.s?' on':'')+'" data-i="'+i+'" data-s="'+j+'">'+x+'</button>'}).join('')+'</div><input data-i="'+i+'" placeholder="Aircraft using or next arrival" aria-label="Aircraft" value="'+esc(r.a)+'"><div class="mean" style="margin-top:6px">'+RH[r.s]+'</div></div>'}).join(''):'<p class="mean">No runways yet. Add the ones in use.</p>'}
+$("ra").onclick=function(){var n=$("rn").value.trim().toUpperCase();if(!n){$("rn").focus();return}R.push({n:n,s:0,a:""});$("rn").value="";sr();rr()};
+$("rws").addEventListener("click",function(e){var d=e.target.dataset;if(d.d!=null)R.splice(d.d,1);else if(d.s!=null)R[d.i].s=+d.s;else return;sr();rr();rs()});
+$("rws").addEventListener("input",function(e){var i=e.target.dataset.i;if(i==null)return;R[i].a=e.target.value;sr()});
+function cut(s,n){return String(s==null?"":s).slice(0,n)}
+$("bx").onclick=function(){var j=JSON.stringify({strips:T,runways:R}),m="Select and copy the text above to keep it.";$("bk").value=j;$("bk").select();try{navigator.clipboard.writeText(j).then(function(){$("bm").textContent="Copied. Paste it somewhere safe."},function(){$("bm").textContent=m})}catch(e){$("bm").textContent=m}};
+$("bi").onclick=function(){try{var o=JSON.parse($("bk").value);if(!o||!Array.isArray(o.strips))throw 0;
+T=o.strips.slice(0,200).map(function(t){return{c:cut(t.c,20),t:cut(t.t,8),r:cut(t.r,6),f:cut(t.f,8),q:cut(t.q,4),s:ST.indexOf(t.s)>-1?t.s:"Parked",n:cut(t.n,120)}});
+R=(Array.isArray(o.runways)?o.runways:[]).slice(0,30).map(function(r){return{n:cut(r.n,6),s:Math.min(3,Math.max(0,+r.s||0)),a:cut(r.a,40)}});
+sv();sr();rs();rr();$("bm").textContent="Imported "+T.length+" aircraft and "+R.length+" runways."}catch(e){$("bm").textContent="That doesn’t look like an exported log. Nothing was changed."}};
+function nq(){var u={},bad={"7500":1,"7600":1,"7700":1,"7000":1,"1200":1,"0000":1};T.forEach(function(t){u[t.q]=1});
+for(var k=0;k<3000;k++){var q="";for(var d=0;d<4;d++)q+=Math.floor(Math.random()*8);if(!u[q]&&!bad[q])return q}return""}
+$("fg").onclick=function(){$("fq").value=nq()};
+var DW=["zero","one","two","three","four","five","six","seven","eight","niner"],SW=["","traffic on final","runway occupied","traffic departing"];
+function dg(s){return String(s).split("").map(function(d){return DW[d]}).join(" ")}
+function fw(f){var m=/^FL\s*(\d{2,3})$/i.exec(f||"");if(m)return"flight level "+dg(m[1]);m=/^(\d+)$/.exec(f||"");if(m&&+m[1]>=1000&&+m[1]%1000===0)return dg(+m[1]/1000)+" thousand";return f||""}
+function rst(n){for(var i=0;i<R.length;i++)if(R[i].n===n)return R[i].s;return 0}
+function nt(t){var c=t.c,r=t.r||"[runway]",s=rst(t.r),a=t.f?fw(t.f):"",busy="Runway "+r+" is marked busy on your runway board.";
+switch(t.s){
+case"Parked":return[c+", pushback approved, report ready to taxi.",c+", taxi to runway "+r+" via [taxiway], hold short of runway "+r+"."];
+case"Pushback":return[c+", taxi to runway "+r+" via [taxiway], hold short of runway "+r+".",c+", hold position."];
+case"Taxi":return[c+", hold short of runway "+r+", contact Tower.",c+", continue taxi."];
+case"Hold short":return s?[c+", hold short runway "+r+", "+SW[s]+".",c+", line up and wait runway "+r+".",busy]:[c+", wind [direction and speed], runway "+r+", cleared for takeoff.",c+", line up and wait runway "+r+".",""];
+case"Departing":return[c+", contact Departure.",c+", turn [left/right] heading [heading]."];
+case"Climbing":return[c+", climb and maintain "+(a||"[altitude]")+".",c+", contact Center."];
+case"Cruise":return[c+", descend and maintain [altitude].",c+", contact Approach."];
+case"Descending":return[c+", expect ILS runway "+r+", descend and maintain [altitude].",c+", fly heading [heading], vectors for ILS runway "+r+"."];
+case"Approach":return s>1?[c+", continue approach, runway "+r+" "+SW[s]+".",c+", go around, runway occupied. Climb and maintain [altitude].",busy]:[c+", wind [direction and speed], runway "+r+", cleared to land.",c+", go around, runway occupied. Climb and maintain [altitude].",""];
+default:return[c+", vacate right via [taxiway], contact Ground.",c+", taxi to the gate via [taxiway].",""]}}
+function nc(t){var n=nt(t),i=T.indexOf(t);return'<div class="nx"><div class="who a">Next call</div><div class="say">“'+esc(n[0])+'”</div><div class="mean">Or: “'+esc(n[1])+'”</div>'+(n[2]?'<div class="mean" style="color:var(--atc)">'+esc(n[2])+'</div>':'')+'<button class="chip" data-cp="'+i+'">Copy</button></div>'}
+var pos="All",UD=null,POS={Ground:["Parked","Pushback","Taxi","Hold short","Landed"],Tower:["Hold short","Departing","Approach","Landed"],"Dep/App":["Departing","Climbing","Descending","Approach"],Center:["Climbing","Cruise","Descending"]};
+function vis(t){return pos==="All"||POS[pos].indexOf(t.s)>-1}
+function mins(t){return Math.floor((Date.now()-(t.ts||Date.now()))/60000)}
+function late(t){var m=mins(t);return(t.s==="Hold short"&&m>=3)||((t.s==="Taxi"||t.s==="Pushback")&&m>=6)}
+function sm(t){return t.s+(t.r?" · "+t.r:"")+(t.f?" · "+t.f:"")+(t.q?" · sq "+t.q:"")+" · "+mins(t)+"m"}
+function snap(){UD=JSON.stringify(T);$("un").hidden=false}
+function adv(i){var k=ST.indexOf(T[i].s);if(k>-1&&k<ST.length-1){T[i].s=ST[k+1];T[i].ts=Date.now();sv();rs()}}
+$("un").onclick=function(){if(UD){T=JSON.parse(UD);UD=null;sv();rs()}$("un").hidden=true};
+$("pf").onclick=function(e){var p=e.target.dataset.p;if(!p)return;pos=p;[].forEach.call($("pf").children,function(b){if(b.dataset.p)b.className="chip"+(b.dataset.p===p?" on":"")});rs()};
+$("ec").onclick=function(){var any=T.some(function(t){return t.o});T.forEach(function(t){t.o=!any});sv();rs()};
+function ph(p){var L={P:"Parked",U:"Pushback",T:"Taxi",H:"Hold short",D:"Departing",C:"Climbing",R:"Cruise",E:"Descending",A:"Approach",L:"Landed"},l=p[p.length-1];if(p.length>1&&L[l]){p.pop();return L[l]}return"Parked"}
+$("qa").addEventListener("keydown",function(e){if(e.key!=="Enter")return;var p=$("qa").value.trim().toUpperCase().split(/\s+/),o={c:p[0]||"",t:"",r:"",f:"",q:nq(),s:ph(p),n:"",ts:Date.now(),o:false};if(!o.c)return;p.slice(1).forEach(function(x){if(/^\d{2}[LRC]?$/.test(x))o.r=x;else if(/^(FL\d{2,3}|\d{4,5})$/.test(x))o.f=x;else o.t=x});T.unshift(o);$("qa").value="";sv();rs()});
+setInterval(function(){[].forEach.call(document.querySelectorAll("#strips .sm"),function(e){var t=T[e.dataset.t];if(t){e.textContent=sm(t);e.classList.toggle("late",late(t))}});var L=T.filter(late),cf=[];try{cf=Object.keys(by).length?0:0}catch(x){}var a=$("al");if(L.length){a.textContent="HOLD/TAXI TOO LONG: "+L.map(function(t){return t.c}).join(", ");a.classList.add("on");a.onclick=function(){a.classList.remove("on");a.onclick=null}}else{a.classList.remove("on")}},30000);
+var FLOG=[];try{FLOG=JSON.parse(localStorage.getItem("ptfs-flog")||"[]")}catch(e){FLOG=[]}
+function sf(){try{localStorage.setItem("ptfs-flog",JSON.stringify(FLOG))}catch(e){}}
+function syncF(){var ch=0;T.forEach(function(t){if(!t.id){t.id=Date.now().toString(36)+Math.random().toString(36).slice(2,7);ch=1}if(t.ls===undefined){t.ls=t.s;ch=1}var r=null;for(var j=0;j<FLOG.length;j++)if(FLOG[j].id===t.id){r=FLOG[j];break}if(!r){r={id:t.id,at:Date.now(),c:"",t:"",r:"",f:"",q:"",n:"",ev:[{at:Date.now(),s:t.s}]};FLOG.unshift(r);ch=1}["c","t","r","f","q","n"].forEach(function(k){if(r[k]!==t[k]){r[k]=t[k];ch=1}});if(t.ls!==t.s){r.ev.push({at:Date.now(),s:t.s});t.ls=t.s;ch=1}});if(ch){sv();sf()}}
+function pd(n){return(n<10?"0":"")+n}
+function tf(x){var d=new Date(x);return pd(d.getHours())+":"+pd(d.getMinutes())}
+function rf(){var c=function(x){return'<td style="border:1px solid var(--line);padding:4px 6px;vertical-align:top">'+esc(x)+'</td>'};var h='<tr>'+["Added","Call sign","Type","Rwy","FL/alt","Squawk","Notes","Status history"].map(function(x){return'<th style="border:1px solid var(--line);padding:4px 6px;text-align:left;color:var(--atc)">'+x+'</th>'}).join('')+'</tr>';
+$("fl").innerHTML=FLOG.length?'<div class="mean" style="margin-bottom:8px">'+FLOG.length+' flights logged</div><div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;font:12px ui-monospace,Menlo,Consolas,monospace;white-space:nowrap">'+h+FLOG.map(function(r){var d=new Date(r.at);return'<tr>'+c(pd(d.getMonth()+1)+"/"+pd(d.getDate())+" "+tf(r.at))+c(r.c)+c(r.t)+c(r.r)+c(r.f)+c(r.q)+c(r.n)+c(r.ev.map(function(e){return e.s+" "+tf(e.at)}).join(" → "))+'</tr>'}).join('')+'</table></div>':'<p class="mean">No flights yet. Anything you add in the log appears here.</p>'}
+var OM=false;
+function rf(){var list=[];FLOG.forEach(function(r,i){if(r.om&&!OM)return;list.push([r,i])});var n=FLOG.filter(function(r){return r.om}).length;$("fo").textContent=(OM?"Hide omitted":"Show omitted")+" ("+n+")";
+$("fl").innerHTML=list.length?'<div class="mean" style="margin-bottom:8px">'+FLOG.length+' flights logged'+(n&&!OM?' · '+n+' omitted':'')+'</div><div class="grid">'+list.map(function(p){var r=p[0],i=p[1],last=r.ev.length?r.ev[r.ev.length-1].s:"",d=new Date(r.at);return'<div class="st" style="border-left-color:'+sc(last)+(r.om?';opacity:.5':'')+'"><div class="sh"><b>'+esc(r.c)+'</b><span class="mean" style="font-size:12px">'+esc(last)+'</span>'+(r.om?'<button class="chip" data-rs="'+i+'">Restore</button>':'<button class="x" data-om="'+i+'" aria-label="Omit">×</button>')+'</div><div class="mean" style="font-size:13px">'+esc([r.t,r.r?"RWY "+r.r:"",r.f,r.q?"SQK "+r.q:""].filter(Boolean).join(" · "))+'</div>'+(r.n?'<div class="mean" style="font-size:13px">'+esc(r.n)+'</div>':'')+'<div class="mean" style="font-size:11px;margin-top:6px">Added '+pd(d.getMonth()+1)+"/"+pd(d.getDate())+" "+tf(r.at)+'</div><div style="font-size:12px;margin-top:4px">'+esc(r.ev.map(function(e){return e.s+" "+tf(e.at)}).join(" → "))+'</div></div>'}).join('')+'</div>':'<p class="mean">'+(FLOG.length?'All flights are omitted. Show omitted to restore them.':'No flights yet. Anything you add in the log appears here.')+'</p>'}
+$("fl").addEventListener("click",function(e){var d=e.target.dataset;if(d.om!=null)FLOG[d.om].om=true;else if(d.rs!=null)FLOG[d.rs].om=false;else return;sf();rf()});
+$("fo").onclick=function(){OM=!OM;rf()};
+$("fk").onclick=function(){var on=$("v4").classList.toggle("landfull");$("fk").textContent=on?"Exit landscape":"Landscape view"};
+$("fp").onclick=function(){show(4);try{window.print()}catch(e){}};
+var Z=100;
+function zs(){document.body.style.zoom=(Z/100);$("zv").textContent=Z+"%"}
+$("zi").onclick=function(){Z=Math.min(200,Z+10);zs()};
+$("zo").onclick=function(){Z=Math.max(50,Z-10);zs()};
+$("fs").onclick=function(){var d=document;if(d.fullscreenElement||d.webkitFullscreenElement){(d.exitFullscreen||d.webkitExitFullscreen).call(d);return}var el=d.documentElement,rq=el.requestFullscreen||el.webkitRequestFullscreen;if(!rq){$("fs").textContent="Not supported here";return}try{var p=rq.call(el);if(p&&p.catch)p.catch(function(){$("fs").textContent="Blocked here"})}catch(e){$("fs").textContent="Blocked here"}};
+document.addEventListener("fullscreenchange",function(){$("fs").textContent=document.fullscreenElement?"Exit full screen":"Full screen"});
+var SS=null,SL=[];
+try{var sx=JSON.parse(localStorage.getItem("ptfs-sess")||"null");if(sx){SS=sx.cur||null;SL=sx.past||[]}}catch(e){}
+function ssv(){try{localStorage.setItem("ptfs-sess",JSON.stringify({cur:SS,past:SL}))}catch(e){}}
+function cnt(from,to){var dep=0,arr=0;FLOG.forEach(function(r){var d=0,a=0;r.ev.forEach(function(e){if(e.at>=from&&e.at<=to){if(e.s==="Departing")d=1;if(e.s==="Landed")a=1}});dep+=d;arr+=a});return{dep:dep,arr:arr}}
+function hm(ms){var s=Math.floor(ms/1000);return pd(Math.floor(s/3600))+":"+pd(Math.floor(s%3600/60))+":"+pd(s%60)}
+function ss(){var h;if(SS){var c=cnt(SS.start,Date.now());h='<div class="st" style="border-left-color:var(--ok)"><div class="sh"><b>Session running</b><button class="chip" id="se">End session</button></div><div style="display:flex;gap:18px;align-items:baseline;flex-wrap:wrap"><span style="font:600 26px ui-monospace,Menlo,Consolas,monospace" id="tm">'+hm(Date.now()-SS.start)+'</span><span>IN <b id="ci">'+c.arr+'</b></span><span>OUT <b id="co">'+c.dep+'</b></span></div><div class="mean" style="font-size:12px;margin-top:4px">Started '+tf(SS.start)+'. IN = landed, OUT = departed, counted from the Flight log during this session.</div></div>'}else{h='<div class="st"><div class="sh"><b>No session running</b><button class="chip" id="ss0">Start session</button></div></div>'}
+if(SL.length){h+='<div class="mean" style="font-size:12px;margin:6px 0 4px">Past sessions</div>'+SL.slice().reverse().map(function(s){return'<div class="st" style="font-size:13px"><b>'+tf(s.start)+'</b> · '+hm(s.end-s.start)+' · IN '+s.arr+' · OUT '+s.dep+'</div>'}).join('')}
+$("ss").innerHTML=h}
+$("ss").addEventListener("click",function(e){if(e.target.id==="ss0"){SS={start:Date.now()};ssv();ss()}else if(e.target.id==="se"&&SS){var c=cnt(SS.start,Date.now());SL.push({start:SS.start,end:Date.now(),arr:c.arr,dep:c.dep});SS=null;ssv();ss()}});
+setInterval(function(){if(!SS)return;var c=cnt(SS.start,Date.now()),t=$("tm");if(t){t.textContent=hm(Date.now()-SS.start);$("ci").textContent=c.arr;$("co").textContent=c.dep}},1000);
+function mr(){var on={};R.forEach(function(r){on[r.n]=1});[].forEach.call(document.querySelectorAll('#strips input[data-k="r"]'),function(e){var v=(e.value||"").trim().toUpperCase(),box=e.parentNode,tag=box.nextElementSibling;if(!tag||tag.className!=="rtag"){tag=document.createElement("div");tag.className="rtag";tag.style.cssText="font:11px ui-monospace,Menlo,Consolas,monospace;margin:2px 0 6px";box.insertAdjacentElement("afterend",tag)}if(!v){tag.textContent="";e.style.borderColor="";return}if(on[v]){tag.textContent="ASSIGNED · RWY "+v+" on runway board";tag.style.color="var(--ok)";e.style.borderColor="var(--ok)"}else{tag.textContent="RWY "+v+" not on runway board";tag.style.color="var(--atc)";e.style.borderColor="var(--atc)"}})}
+$("strips").addEventListener("input",function(e){if(e.target.dataset.k==="r")mr()});
+var rs0=rs;rs=function(){rs0();mr()};
+var rr0=rr;rr=function(){rr0();mr()};
+function cs(c){return String(c||"").toUpperCase().replace(/\d/g,function(d){return DW[+d]+" "}).trim()}
+function rw(r){if(!r)return"[runway]";var m=/^(\d\d)([LRC]?)$/.exec(r);if(!m)return r;return dg(m[1])+(m[2]==="L"?" left":m[2]==="R"?" right":m[2]==="C"?" center":"")}
+function nt(t){var c=cs(t.c),r=rw(t.r),s=rst(t.r),a=t.f?fw(t.f):"[altitude]",h="[heading]",w="wind [direction] at [speed]",busy="Runway "+r+" is marked busy on your runway board.";
+switch(t.s){
+case"Parked":return[c+", pushback approved, face [north/south/east/west].",c+", start up approved, taxi to runway "+r+" when ready.","Pushback first, then taxi when they report ready."];
+case"Pushback":return[c+", taxi to runway "+r+" via [taxiway], hold short runway "+r+".",c+", hold position.","Clear the route before you issue taxi."];
+case"Taxi":return[c+", hold short runway "+r+", contact Tower.",c+", continue taxi.","Hand off to Tower at the hold short line."];
+case"Hold short":return s?[c+", hold short runway "+r+", "+SW[s]+".",c+", line up and wait runway "+r+".",busy]:[c+", line up and wait runway "+r+".",c+", "+w+", runway "+r+", cleared for takeoff.","Clear once they’re lined up and the runway is clear."];
+case"Departing":return[c+", contact Departure.",c+", turn [left/right] heading "+h+", climb and maintain "+a+".","Use this once they’re airborne."];
+case"Climbing":return[c+", climb and maintain "+a+".",c+", contact Center.","Hand off once they’re out of your airspace."];
+case"Cruise":return[c+", descend and maintain "+a+".",c+", contact Approach.",""];
+case"Descending":return[c+", expect ILS runway "+r+", descend and maintain [altitude], altimeter [setting].",c+", turn right heading "+h+", vectors ILS runway "+r+".",""];
+case"Approach":return s>1?[c+", continue approach, runway "+r+" "+SW[s]+".",c+", go around, runway occupied, climb and maintain [altitude].",busy]:[c+", "+w+", runway "+r+", cleared to land.",c+", go around, climb and maintain "+a+".",""];
+default:return[c+", vacate right via [taxiway], contact Ground.",c+", taxi to the gate via [taxiway].",""]}}
+function nc(t){var n=nt(t),i=T.indexOf(t);return'<div class="nx"><div class="who a">Next call</div><div class="say">“'+esc(n[0])+'”</div><div class="mean">Or: “'+esc(n[1])+'”</div>'+(n[2]?'<div class="mean" style="color:var(--atc)">'+esc(n[2])+'</div>':'')+'<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="chip" data-cp="'+i+'">Copy</button><button class="chip" data-said="'+i+'">Said it</button><button class="chip" data-miss="'+i+'">Missed</button></div></div>'}
+var GM={pts:0,streak:0,best:0,keys:[]};
+try{var gz=JSON.parse(localStorage.getItem("ptfs-game")||"null");if(gz)GM=gz}catch(e){}
+function gs(){var el=$("gs");if(el)el.textContent="Points "+GM.pts+" · Streak "+GM.streak+" (best "+GM.best+")"}
+function gsv(){try{localStorage.setItem("ptfs-game",JSON.stringify(GM))}catch(e){}gs()}
+$("strips").addEventListener("click",function(e){var d=e.target.dataset,i=d.said!=null?d.said:d.miss;if(i==null)return;var t=T[i];if(!t)return;var key=t.id+":"+t.s;if(GM.keys.indexOf(key)>-1)return;GM.keys.push(key);GM.keys=GM.keys.slice(-200);if(d.said!=null){GM.streak++;GM.best=Math.max(GM.best,GM.streak);var g=10+Math.min(GM.streak,10)*2;GM.pts+=g;e.target.textContent="+"+g}else{GM.streak=0;e.target.textContent="Missed"}gsv()});
+function gs(){var el=$("gs");if(el)el.textContent=""}
+function nt(t){var c=cs(t.c),r=rw(t.r),s=rst(t.r),a=t.f?fw(t.f):"[altitude]",h="[heading]",w="wind [direction] at [speed]",busy="Runway "+r+" is marked busy on your runway board.";
+switch(t.s){
+case"Parked":return[c+", pushback approved, face [north/south/east/west].",c+", start up approved.","Taxi clearance comes after they report ready to taxi."];
+case"Pushback":return[c+", taxi to runway "+r+" via [taxiway], hold short of runway "+r+".",c+", hold position, traffic ahead.","Make them read back the full route and holding point."];
+case"Taxi":return[c+", hold short of runway "+r+", contact Tower.",c+", continue taxi.","Hand off at the hold short line, not before."];
+case"Hold short":return s?[c+", hold short of runway "+r+", "+SW[s]+".",c+", runway "+r+", line up and wait.",busy]:[c+", runway "+r+", line up and wait.",c+", "+w+", runway "+r+", cleared for takeoff.","Clear the takeoff once they’re lined up and the runway is clear."];
+case"Departing":return[c+", contact Departure.",c+", turn [left/right] heading "+h+", climb and maintain "+a+".","Use this once they’re airborne."];
+case"Climbing":return[c+", climb and maintain "+a+".",c+", contact Center.","Hand off once they’re out of your airspace."];
+case"Cruise":return[c+", descend and maintain "+a+".",c+", contact Approach.",""];
+case"Descending":return[c+", expect ILS runway "+r+" approach, descend and maintain "+a+", altimeter [setting].",c+", turn right heading "+h+", vectors for ILS runway "+r+".","Clear the approach once they’re established on the localizer."];
+case"Approach":return s>1?[c+", continue approach, runway "+r+" "+SW[s]+".",c+", go around, runway occupied, climb and maintain "+a+".",busy]:[c+", "+w+", runway "+r+", cleared to land.",c+", go around, climb and maintain "+a+".","Clear to land only when the runway is clear."];
+default:return[c+", vacate runway via [taxiway], contact Ground.",c+", taxi to the gate via [taxiway].",""]}}
+function nc(t){var n=nt(t),i=T.indexOf(t);return'<div class="nx"><div class="who a">Next call</div><div class="say">“'+esc(n[0])+'”</div><div class="mean">Or: “'+esc(n[1])+'”</div>'+(n[2]?'<div class="mean" style="color:var(--atc)">'+esc(n[2])+'</div>':'')+'<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="chip" data-cp="'+i+'">Copy</button></div></div>'}
+gs();
+ss();rr();rs();
+function bootOnce(){var k="ptfs-boot";try{if(localStorage.getItem(k))return}catch(e){return}
+var b=document.createElement("div");b.id="boot";b.setAttribute("role","status");document.body.appendChild(b);
+var L=["HOLD SHORT ATC SYSTEM  v1.0","PTFS Controller Desk","","Initializing display ............ OK","Loading phraseology library ...... OK","Loading strip board .............. OK","Loading runway board ............. OK","Loading flight log ............... OK","Calibrating squawk allocator ..... OK","","SYSTEM READY","","Tap to continue"];
+var i=0,out=document.createElement("div");out.className="txt";b.appendChild(out);var bar=document.createElement("div");bar.className="bar";bar.innerHTML="<i></i>";b.appendChild(bar);
+function fin(){b.classList.add("off");try{localStorage.setItem(k,"1")}catch(e){}setTimeout(function(){b.remove()},700)}
+b.onclick=fin;
+function step(){if(i<L.length){out.textContent+=L[i]+"\n";bar.firstChild.style.width=((i+1)/L.length*100)+"%";i++;setTimeout(step,240)}else{setTimeout(fin,1200)}}
+function nt(t){var c=t.c,r=t.r||"[runway]",s=rst(t.r),a=t.f?fw(t.f):"",busy="Runway "+r+" is marked busy on your runway board.";
+switch(t.s){
+case"Parked":return[c+", pushback approved, report ready to taxi.",c+", taxi to runway "+r+" via [taxiway], hold short of runway "+r+"."];
+case"Pushback":return[c+", taxi to runway "+r+" via [taxiway], hold short of runway "+r+".",c+", hold position."];
+case"Taxi":return[c+", hold short of runway "+r+", contact Tower.",c+", continue taxi."];
+case"Hold short":return s?[c+", hold short runway "+r+", "+SW[s]+".",c+", line up and wait runway "+r+".",busy]:[c+", wind [direction and speed], runway "+r+", cleared for takeoff.",c+", line up and wait runway "+r+".",""];
+case"Departing":return[c+", contact Departure.",c+", turn [left/right] heading [heading]."];
+case"Climbing":return[c+", climb and maintain "+(a||"[altitude]")+".",c+", contact Center."];
+case"Cruise":return[c+", descend and maintain [altitude].",c+", contact Approach."];
+case"Descending":return[c+", expect ILS runway "+r+", descend and maintain [altitude].",c+", fly heading [heading], vectors for ILS runway "+r+"."];
+case"Approach":return s>1?[c+", continue approach, runway "+r+" "+SW[s]+".",c+", go around, runway occupied. Climb and maintain [altitude].",busy]:[c+", wind [direction and speed], runway "+r+", cleared to land.",c+", go around, runway occupied. Climb and maintain [altitude].",""];
+default:return[c+", vacate right via [taxiway], contact Ground.",c+", taxi to the gate via [taxiway].",""]}}
+function nc(t){var n=nt(t),i=T.indexOf(t);return'<div class="nx"><div class="who a">Next call</div><div class="say">“'+esc(n[0])+'”</div><div class="mean">Or: “'+esc(n[1])+'”</div>'+(n[2]?'<div class="mean" style="color:var(--atc)">'+esc(n[2])+'</div>':'')+'<button class="chip" data-cp="'+i+'">Copy</button></div>'}
+step()}
+</script>
+</body>
+</html>
